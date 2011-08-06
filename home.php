@@ -258,11 +258,22 @@ $(function() {
     'script'        : '/scripts/lib/uploadify/uploadify.php',
     'cancelImg'     : '/scripts/lib/uploadify/cancel.png',
 	'fileDataName' : 'Filedata',
+	'auto'		   : true,
 	'onSelectOnce' : function(event,data) {
       setRandFileName();
 	  var json = {'tempFile':tempFileName};
 	  $('#file_upload').uploadifySettings('scriptData',json);
-    }
+	  var button = document.getElementById('v');
+	  button.disabled = true;
+    },
+	'onComplete' : function (event, ID, fileObj, response, data) {
+	  var button = document.getElementById('v');
+	  button.disabled = false;
+	},
+	'onCancel' : function (event,ID,fileObj,data) {
+	  var button = document.getElementById('v');
+	  button.disabled = false;
+	}
   });
 });
 </script>
@@ -273,7 +284,7 @@ $(function() {
 <td style="padding:4px; padding-left:10px;" class="comment_box">
 <span style="font-family:'Pictos'; float:left; font-size:44px;">W</span>
 <textarea cols="30" rows="2" style="margin: 2px 0px 5px 5px;float: left;width:430px;font-size:14px; font-weight:bold" name="content" id="content" maxlength="145" ></textarea><br />
-<input type="submit" onclick="$('#file_upload').uploadifyUpload()" value="Update"  id="v" name="submit" class="comment_button"/>
+<input type="submit" value="Update"  id="v" name="submit" class="comment_button"/>
 
 </td>
 
@@ -335,6 +346,9 @@ foreach ($posts as $pid){
 		$display_string .= "<div class='postContainer' id='{$pid}post'>";
 		$display_string .= "<div class='postUserPic' align='left'>";
 		$display_string .= "<img src='https://s3-us-west-1.amazonaws.com/rawrimages/{$uid}.png'>";
+		/*this line reads user pic from server
+		$display_string .= "<img src='img/user_imgs/{$uid}.png'>";
+		*/
 		$display_string .= "</div>";
 		$display_string .= "<div class='postAuthor'>";
 		$display_string .= "<b>{$alias}</b> <span style='font-size:10px; color:#777;'>@{$loc}</span>";

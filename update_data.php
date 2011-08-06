@@ -23,6 +23,7 @@ $type= "text";
 $text=$_POST['text']; 
 $locName=$_POST['locName'];
 $lid=$_SESSION['lid'];
+$fileString = $_POST['fileName'];
 $parent="UC_Berkeley";
 $timestamp = date("D M j G:i:s +0000 Y");
 $media = null;
@@ -31,18 +32,66 @@ $score = 0;
 $pid=$redis->get('global.pid');
 $redis->incr('global.pid');
 
+$picExts = array(".jpg" => "image/jpeg", ".jpeg" => "image/jpeg",".gif" => "image/gif",".png" => "image/png",".tiff" => "image/tiff", ".tif" => "image/tiff");
+$audExts = array(".mp3" => "audio/mpeg", ".wav" => "audio/wave", ".ogg" => "audio/ogg");
+$appExts = array(".zip" => "application/zip");
+$docExts = array(".pdf" => "application/pdf", ".txt" => "text/plain",".doc" => "application/msword",".docx" => "application/msword");
+$targetPath = $_SERVER['DOCUMENT_ROOT'] . '/upload_temp/';
+$file = "";
+$fileExt = "";
+$fileContent = "";
+foreach($picExts as $ext => $contentType) {
+	$tempPath = $targetPath.$fileString.$ext;
+	if(file_exists($tempPath)) {
+		$type = "pic";
+		$file = $tempPath;
+		$fileExt = $ext;
+		$fileContent = $contentType;
+		
+	}
+}
 
+foreach($audExts as $ext => $contentType) {
+	$tempPath = $targetPath.$fileString.$ext;
+	if(file_exists($tempPath)) {
+		$type = "audio";
+		$file = $tempPath;
+		$fileExt = $ext;
+		$fileContent = $contentType;
+		
+	}
+}
 
+foreach($appExts as $ext => $contentType) {
+	$tempPath = $targetPath.$fileString.$ext;
+	if(file_exists($tempPath)) {
+		$type = "app";
+		$file = $tempPath;
+		$fileExt = $ext;
+		$fileContent = $contentType;
+		
+	}
+}
 
-if(strcmp($type,"pic")==0){
-	$file = $_FILES["file"]['tmp_name'];
-	$filename = $pid.".jpg";
+foreach($docExts as $ext => $contentType) {
+	$tempPath = $targetPath.$fileString.$ext;
+	if(file_exists($tempPath)) {
+		$type = "doc";
+		$file = $tempPath;
+		$fileExt = $ext;
+		$fileContent = $contentType;
+		
+	}
+}
+if($file != "" AND $type != "doc"){
+	$filename = $pid.$fileExt;
 	if($exists) {
-		$s3->batch()->create_object($bucket, $filename, array('fileUpload' => $file));
+		$s3->batch()->create_object($bucket, $filename, array('fileUpload' => $file, 'content-type'=>$fileContent));
 		$file_upload_response = $s3->batch()->send();
 		if($file_upload_response->areOK()) {
 			$s3->set_object_acl($bucket, $filename, AmazonS3::ACL_PUBLIC);
 			$media= $s3->get_object_url($bucket, $filename) . PHP_EOL . PHP_EOL;
+			unlink($file);
 		}
 	}
 }

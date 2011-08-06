@@ -99,6 +99,13 @@ function success(position) {
     					
 				}
 			});
+			FB.Event.subscribe('auth.login',function(response) {
+				if (response.session) {
+					findFriends(response.session.uid);
+				} else {
+    					
+				}
+			});
 			//Query fb db for friend users.
 			var mUID;
 			var mFirst;

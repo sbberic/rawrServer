@@ -1,10 +1,8 @@
 <?php
 include ("mailer.php");
-include("../AWS/sdk-1.3.2/sdk-1.3.2/sdk.class.php");
+require_once 'lib/redisConfig.php';
 
-$s3 = new AmazonS3();
-$bucket = 'rawrimages';
-
+$redis = new Predis\Client($single_server);
 $str = $_GET['str'];
 $fid = $_GET['uid'];
 $first = $_GET['first'];
@@ -40,14 +38,12 @@ function sendAutoEmails($fids, $friendName) {
 	foreach($mfids as $fid) {
 		$sql = "SELECT email,alias FROM ".$tbl_name." WHERE fid=".$fid;
 		$result = mysql_query($sql);
-		if(mysql_num_rows($result)>0){
-			$row = mysql_fetch_assoc($result);
-			$email = $row['email'];
-			$user = $row['alias'];
-			$mailer->sendAutoCreate($friendName, $user, $email);
-			$sql = "UPDATE ".$tbl_name." SET confirm='yes' WHERE fid=".$fid;
-			$result = mysql_query($sql);
-		}
+		$row = mysql_fetch_assoc($result);
+		$email = $row['email'];
+		$user = $row['alias'];
+		$mailer->sendAutoCreate($friendName, $user, $email);
+		$sql = "UPDATE ".$tbl_name." SET confirm='yes' WHERE fid=".$fid;
+		$result = mysql_query($sql);
 	}
 }
 
@@ -86,43 +82,46 @@ if($hasFriend) {
 		header($redirect);
 	}
 	else {
-		$email="none";
+		$email=genConfirmRand(25);
 		$alias=$first." ".$last;
 		$pw=genConfirmRand(25);
 		$confirmString = "yes";
+		//insert new user into sql db with random email/pw
 		$sql="INSERT INTO users (email, alias, password,fid, type,confirm) VALUES ('".$email."','".$alias."','".$pw."','".$fid."',1,'".$confirmString."')";
    		mysql_query($sql);
-		sendAutoEmails($nonConfirmed, $alias);
-		
-		$file = "tempProfilePic.png";
-		imagepng(imagecreatefromjpeg("http://graph.facebook.com/{$fid}/picture"),$file);
-		
-		//$file = $_FILES["file"]['tmp_name'];
-		$filename = "{$uid}.png";
-			$s3->batch()->create_object($bucket, $filename, array('fileUpload' => $file));
-			$file_upload_response = $s3->batch()->send();
-			if($file_upload_response->areOK()) {
-				$s3->set_object_acl($bucket, $filename, AmazonS3::ACL_PUBLIC);
-				$media= $s3->get_object_url($bucket, $filename) . PHP_EOL . PHP_EOL;
-			}
-		
-
-		
+		//insert uid:new_user.alias into redis
 		$sql2 = "SELECT * FROM ".$tbl_name." WHERE fid=".$fid;
 		$result2 = mysql_query($sql2);
 		$row = mysql_fetch_array($result2);
+		$uid = $row['uid'];
+		$userAlias='uid:'.$uid.'.alias';
+		$redis->set($userAlias,$alias);
+		//fetch thumbnail pic from fb
+		$file = "tempProfilePic.png";
+		imagepng(imagecreatefromjpeg("http://graph.facebook.com/{$fid}/picture"),$file);
+		//put new profile pic into server
+		file_put_contents("./img/user_imgs/{$uid}.png", $file);
+		/* following code puts user profile image on s3 instead
+		$s3->batch()->create_object($bucket, $filename, array('fileUpload' => $file));
+		$file_upload_response = $s3->batch()->send();
+		if($file_upload_response->areOK()) {
+			$s3->set_object_acl($bucket, $filename, AmazonS3::ACL_PUBLIC);
+			$media= $s3->get_object_url($bucket, $filename) . PHP_EOL . PHP_EOL;
+		}
+		*/
 		$_SESSION["lid"] = "UC_Berkeley";
 		$_SESSION["uid"] = $row['uid'];
 		$_SESSION["fid"] = $fid;
 		$_SESSION["type"] = $row['type'];
 		$_SESSION["alias"] = $alias;
 		header($redirect);
-
+		
 		
 	}	
 
 }
 else {
+	header("Location: ../index.php");
 	//redirect to php form
 	$sql = "SELECT * FROM ".$tbl_name." WHERE fid=".$fid;
 	$result = mysql_query($sql);
