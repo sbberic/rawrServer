@@ -340,6 +340,32 @@ foreach ($posts as $pid){
 	$crop = trim($redis->get($postCrop));
 	$spamCount = trim($redis->get($postSpam));
 	$loc=trim($redis->get($postLoc));
+	/*
+	<script type="text/javascript" src='http://www.scribd.com/javascripts/view.js'></script>
+
+	<div id='scribd_embedded' >
+	<a href='http://www.scribd.com'>Scribd</a>
+	</div>
+
+	<script type="text/javascript">
+	//retrieve doc_id and access_key from redis
+	var doc_id;
+	var access_key;
+	var scribd_doc = scribd.Document.getDoc(doc_id, access_key);
+
+	var oniPaperReady = function(e){
+	
+	}
+
+	scribd_doc.addEventListener( 'iPaperReady', oniPaperReady );
+	scribd_doc.addParam('height', 600);
+	scribd_doc.addParam('width', 400);
+	//scribd_doc.addParam('page', 10);
+	scribd_doc.addParam('public', true);
+
+	scribd_doc.write('scribd_embedded');
+	</script>
+	*/
 	
 	if($spamCount >-1){
 		$display_string .= "<li class='{$type}post' id='{$pid}li'>";

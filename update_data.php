@@ -5,11 +5,16 @@ include('db.php');
 
 
 require_once 'scripts/lib/redisConfig.php';
-include("AWS/sdk-1.3.2/sdk-1.3.2/sdk.class.php");
+require_once 'AWSSDKforPHP/sdk.class.php';
+require_once 'scripts/lib/scribd_php/scribd.php';
+
 
 $redis = new Predis\Client($single_server);
 
+$scribd_api_key = "4ud0tokp2wz5i1heaload";
+$scribd_secret = "sec-4yj8b6wiq3bennzn7br4cz6kmz"; 
 
+$scribd = new Scribd($scribd_api_key, $scribd_secret);
 
 if(isSet($_POST['text']))
 {
@@ -83,18 +88,28 @@ foreach($docExts as $ext => $contentType) {
 		
 	}
 }
-if($file != "" AND $type != "doc"){
+$docData = null;
+if($file != ""){
 	$filename = $pid.$fileExt;
-	if($exists) {
+	if($exists AND strcmp($type, "doc")!=0) {
 		$s3->batch()->create_object($bucket, $filename, array('fileUpload' => $file, 'content-type'=>$fileContent));
 		$file_upload_response = $s3->batch()->send();
 		if($file_upload_response->areOK()) {
 			$s3->set_object_acl($bucket, $filename, AmazonS3::ACL_PUBLIC);
 			$media= $s3->get_object_url($bucket, $filename) . PHP_EOL . PHP_EOL;
-			unlink($file);
+			
 		}
 	}
+	else if(strcmp($type, "doc")==0) {
+		$doc_type = substr($fileExt, 1);
+		$access = "public";
+		$rev_id = null;
+		$docData = $scribd->upload($file, $doc_type, $access, $rev_id);
+		$media = $docData['doc_id'].".".$docData['access_key'];
+	}
+	unlink($file);
 }
+
 
 $postType='post:'.$pid.'.type';
 $postAuthor='post:'.$pid.'.author';
