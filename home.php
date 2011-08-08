@@ -33,7 +33,7 @@ $(".comment_button").click(function()
     var boxval = $("#content").val();
 	
 	var fileName;
-	if(tempFileName!=null) {
+	if(tempFileName!=null) { 
 		fileName = tempFileName;
 	}
 	var locationName=localStorage.getItem("locName");
@@ -92,13 +92,25 @@ function fav(pid,uid){
 	return false;
 }
 
-function loadComments(pid){
-	document.getElementById(pid+'li').addClass('expand');
-	$.post('scripts/getMoreComments.php', {pid: pid }, function(data) {
-  		$("div#"+pid+"post").append(data);
-  		$("div#"+pid+"post").slideDown("slow");
-	});
-	console.log('hello');
+function loadComments(pid){ 
+	$("li#"+pid+"li").addClass("expand");
+	if(document.getElementById(pid+"comments") == null) {
+		$.post('scripts/getMoreComments.php', {pid: pid }, function(data) {
+			$("li#"+pid+"li").append(data);
+			$("div#"+pid+"comments").slideDown("slow");
+			console.log(pid);
+			
+		});
+	}
+	else if(document.getElementById(pid+"comments").style.display == "none"){
+		$("div#"+pid+"comments").slideDown();
+		$("li#"+pid+"li").addClass("expand");
+	}
+	else{
+		
+		$("div#"+pid+"comments").slideUp();
+		$("li#"+pid+"li").removeClass("expand");
+	}
 	return false;
 }
 
@@ -140,14 +152,19 @@ var newURL = window.location.href.split('=');
 var storedLid = newURL[1];
 localStorage.setItem("lid", storedLid);
 
-$(".postContainer").hover(
-  function () {
-    $(this).addClass("hover");
-  },
-  function () {
-    $(this).removeClass("hover");
-  }
-);
+$("#updat li").hover(
+function () {
+   $(this).addClass("hover");
+	console.log("hover?");
+},
+function () {
+   $(this).removeClass("hover");
+}
+).click(function(){
+	var pid = this.id;
+	pid = pid.substring(0,pid.indexOf('li'));
+	loadComments(pid);
+});
 
 $("postUserPic").load(function() {
     $(this).wrap(function(){
@@ -368,7 +385,7 @@ foreach ($posts as $pid){
 	*/
 	
 	if($spamCount >-1){
-		$display_string .= "<li class='{$type}post' id='{$pid}li'>";
+		$display_string .= "<li class='{$type}post' id='{$pid}li' style='display: block;'>";
 		$display_string .= "<div class='postContainer' id='{$pid}post'>";
 		$display_string .= "<div class='postUserPic' align='left'>";
 		$display_string .= "<img src='https://s3-us-west-1.amazonaws.com/rawrimages/{$uid}.png'>";
@@ -383,6 +400,7 @@ foreach ($posts as $pid){
 		$display_string .= "<span>";
 		$display_string .= $text;
 		$display_string .= "</span></div>";
+		$display_string .= "</div>";
 		$display_string .= "<div class='postScore' id='{$pid}Score'>";
 		$display_string .= $score;
 		$display_string .= "</div>";
@@ -398,9 +416,6 @@ foreach ($posts as $pid){
 		$display_string .= "q";
 		$display_string .= "</a></div>";;
 		if(strcmp($type,"pic")==0){
-			$display_string .= "<div class='postType'>";
-			$display_string .= "P";
-			$display_string .= "</div>";
 		
 			$display_string .= "<div class='postMedia'>";
 			$display_string .= "<a href='https://s3-us-west-1.amazonaws.com/rawr.ucberkeley/{$pid}.jpg'>";
@@ -410,14 +425,11 @@ foreach ($posts as $pid){
 		
 		}
 		if(strcmp($type,"audio")==0){
-			$display_string .= "<div class='postType'>";
-			$display_string .= "m";
-			$display_string .= "</div>";
 			$display_string .= "<div class='postMedia'>";
 			$display_string .= "<audio src='https://s3-us-west-1.amazonaws.com/rawr.ucberkeley/{$pid}.mp3' controls='controls' controls autobuffer></audio>";
 			$display_string .= "</div>";
 		}
-		$display_string .= "</div>";
+		
 		$display_string .= "</li>";
 		
 		

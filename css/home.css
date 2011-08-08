@@ -3,6 +3,7 @@ body
 {
 font-family:Arial, Helvetica, sans-serif;
 font-size:14px;
+background-color:#D3E7F5;
 }
 #title{
 	font-family: 'PictoPreview', sans-serif;
@@ -47,7 +48,6 @@ width: 5%;
 #subLocs{
     margin: 0px 70px 10px 70px;
     padding: 11px 10px 8px 10px;
- 	height: 
     border-radius: 6px;
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
@@ -83,8 +83,32 @@ width: 5%;
 	color: white;
 	
 }
+
+#contentContainer{
+	float:left;
+	margin-top: 5px;
+	padding:5px;
+	border:solid black 1px;
+	-moz-box-shadow: 0px 0px 5px #888;
+	-webkit-box-shadow: 0px 0px 5px #888;
+	box-shadow: 0px 0px 5px #888;
+}
+#locInfoContainer{
+	float:left;
+	margin: 5px 0px 5px 80px;
+	width:300px;
+	height:800px;
+	border:solid black 1px;
+	-moz-box-shadow: -3px 0px 5px #888;
+	-webkit-box-shadow: -3px 0px 5px #888;
+	box-shadow: -3px 0px 5px #888;
+}
+
+#locInfo{
+
+}
 .expand{
-height: 200px;
+display:block;
 }
 .hover{
 	border: solid 1px #CCC;
@@ -94,13 +118,19 @@ height: 200px;
 }
 .comment_box
 {
-background-color:#D3E7F5; border-bottom:#ffffff solid 1px; padding-top:3px
+background-color:#FFF; border:#AAAAAA solid 1px; padding-top:3px; border-radius: 4px;
 }
 .postContainer{
 width: inherit;
 height: 80px;
 width: 497px;
 }
+
+.postComments{
+margin-left: 50px;
+display:none;
+}
+
 .postFavList{
 position: absolute;
 top:57px;
@@ -215,9 +245,9 @@ a
 	}
 	
 	ol.timeline
-	{list-style:none;font-size:1.2em;}ol.timeline li{ display:none;position:relative;padding:0 0 .6em 0;border-bottom:1px dashed #000;line-height:1.1em; background-color:#D3E7F5; height:70px; width:499px;}ol.timeline li:first-child{border-top:1px dashed #000;}
+	{list-style:none;font-size:1.2em;}ol.timeline li{ display:none;position:relative;padding:0 0 .6em 0;border-bottom:1px solid #CCC;line-height:1.1em; background-color:#FFFFFF; height:70px; width:499px; border-radius: 5px;}ol.timeline li:first-child{border-top:1px solid #CCC;}
 	ol.oldtimeline
-	{list-style:none;font-size:1.2em;}ol.oldtimeline li{position:relative;padding:0 0 .6em 0;border-bottom:1px dashed #000;line-height:1.1em; background-color:#D3E7F5; height:70px; width:499px;}ol.oldtimeline li:first-child{border-top:1px dashed #000;}
+	{list-style:none;font-size:1.2em;}ol.oldtimeline li{position:relative;padding:0 0 .3em 0;border-bottom:1px solid #CCC;line-height:1.1em; /*background-color:#D3E7F5;*/background-color:#FFFFFF; width:499px;border-radius: 5px;}ol.oldtimeline li:first-child{border-top:1px solid #CCC;}
 	
 	.delete_button
 	{
@@ -236,3 +266,25 @@ a
 	font-weight:bold;
 	
 	}
+	.pic {
+	padding: 2px;
+	margin-left: 2px;
+	border: solid 2px #EDEDED;
+	}
+	input.comment_button {
+  	/* General Propertoes */
+ 		height:30px;
+	 	width:70px;
+	 	border:1px solid #858fa6;
+  		background:#4a5775;
+  	/* CSS3 Styling */
+  		background:-moz-radial-gradient(bottom, #353535,  #616161 60%);
+  		background:-webkit-gradient(radial, center bottom, 0, center 230, 230, from(#353535), to(#616161));
+ 		 -moz-border-radius:3px;
+  		-webkit-border-radius:3px;
+  		border-radius:3px;
+  	/* Text Styling */
+  		color:#FFFFFF;
+  		font-size:15px;
+  		text-shadow:0px 0px 5px rgba(0, 0, 0, 0.75);
+}
