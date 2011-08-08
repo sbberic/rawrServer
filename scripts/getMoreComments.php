@@ -6,7 +6,7 @@ $redis = new Predis\Client($single_server);
 
 $postCommentsKey = 'post:'.$pid.'comments';
 $comments = $redis->lrange($postCommentsKey, 0, 50); //temporary 50, make pull all posts
-$display_string = "<div class='postComments' id='{$pid}comments'><ol>";
+$display_string = "<div class='postComments' id='{$pid}comments'><ol id={$pid}commentsOL>";
 foreach ($comments as $cid) {
 	$commentsCid = 'comment:'.$cid;
 
@@ -60,13 +60,15 @@ foreach ($comments as $cid) {
 		$display_string .= "</li>";
 		
 	}
-}
+}		
+		$display_string .= "</ol>";
 		$display_string .= "<div class='newComment'>";
 		$display_string .= "<form id='{$pid}'>";
-		$display_string .= "<input placeholder='new comment...' type='text' name='comment'/>";
-		$display_string .= "<input type='submit' name='submit' value='submit'>";
+		$display_string .= "<textarea cols='30' rows='2' style='margin: 2px 0px 5px 5px;float: left;width:430px;font-size:14px; font-weight:bold' name='comment_content' id='{$pid}cc' maxlength='145' ></textarea><br>
+";
+		$display_string .= "<input type='submit' value='Submit' id={$pid}submit name='submit' class='comment_submit'/>";
 		$display_string .= "</form>";
-		$display_string .= "</div>";
-		$display_string .= "</ol></div>";
+		$display_string .= "</div></div>";
+		
 echo stripslashes($display_string);
 ?> 

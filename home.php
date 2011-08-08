@@ -255,17 +255,24 @@ $("postUserPic").load(function() {
   </div>
   </div>
 
-<div align="center">
-<table cellpadding="0" cellspacing="0" width="500px">
-<tr>
-<td>
+<div id="locInfoContainer">
+<div id="locInfo">
+<script>document.write(localStorage.getItem("locName"));</script>
+<img src="http://farm1.static.flickr.com/221/464185760_0970ad567e.jpg" width="280px" class="pic">
+
+<form id="addEvent">
+<input name="name" placeholder="Event Name">
+<input type="submit" value="Create Event"  class="comment_button"/>
+</form>
+
+</div>
+</div>
+<div id="contentContainer">
 
 	
 <div align="left">
 <form  method="post" enctype="multipart/form-data" name="form" action="" id ="mform">
 <table cellpadding="0" cellspacing="0" width="500px">
-
-<tr><td align="left"><div align="left"><h3>Care to share?</h3></div></td></tr>
 <tr>
 <td>
 <script>
@@ -309,6 +316,7 @@ $(function() {
 
 </table>
 </form>
+
 
 
 </div>
@@ -445,7 +453,7 @@ echo $display_string;
 </tr>
 </table>
 <div id="loader"></div>
-
 </div>
+
 </body>
 </html>
