@@ -64,6 +64,43 @@ $.ajax({
 }
 return false;
 	});
+
+$(".comment_submit").click(function() 
+{ 
+ 
+	console.log("clicked");
+    var elementID = this.id;
+	var pid = elementID.substring(0,indexOf("submit"));
+    var boxval = $("#comment_content").val();
+	
+	var locationName=localStorage.getItem("locName");
+	var dataString = 'commentText=' + boxval +'&locName='+locationName + '&pid=' + pid;
+	
+	if(boxval=='')
+	{
+		alert("Please Enter Some Text");
+	}
+	else
+	{
+	$("#flash").show();
+	$("#flash").fadeIn(400).html('<img src="img/ajax.gif" align="absmiddle">&nbsp;<span class="loading">Submitting Comment...</span>');
+$.ajax({
+		type: "POST",
+  url: "update_data.php",
+  data: dataString,
+  cache: false,
+  success: function(html){
+ 
+  $("ol#"+pid+"commentsOL").append(html);
+  $("ol#"+pid+"commentsOL li:last").slideDown("slow");
+   document.getElementById(pid+'cc').value='';
+  $("#flash").hide();
+	
+  }
+ });
+}
+return false;
+	});
 });
 
 function randomString(length)
@@ -93,7 +130,7 @@ function fav(pid,uid){
 }
 
 function loadComments(pid){ 
-	$("li#"+pid+"li").addClass("expand");
+	//$("li#"+pid+"li").addClass("expand");
 	if(document.getElementById(pid+"comments") == null) {
 		$.post('scripts/getMoreComments.php', {pid: pid }, function(data) {
 			$("li#"+pid+"li").append(data);
@@ -104,12 +141,12 @@ function loadComments(pid){
 	}
 	else if(document.getElementById(pid+"comments").style.display == "none"){
 		$("div#"+pid+"comments").slideDown();
-		$("li#"+pid+"li").addClass("expand");
+		//$("li#"+pid+"li").addClass("expand");
 	}
 	else{
 		
 		$("div#"+pid+"comments").slideUp();
-		$("li#"+pid+"li").removeClass("expand");
+		//$("li#"+pid+"li").removeClass("expand");
 	}
 	return false;
 }
@@ -152,17 +189,17 @@ var newURL = window.location.href.split('=');
 var storedLid = newURL[1];
 localStorage.setItem("lid", storedLid);
 
-$("#updat li").hover(
+$("#updat li").hover( 
 function () {
    $(this).addClass("hover");
-	console.log("hover?");
 },
 function () {
    $(this).removeClass("hover");
 }
-).click(function(){
+)
+$('.postContainer').click(function(){
 	var pid = this.id;
-	pid = pid.substring(0,pid.indexOf('li'));
+	pid = pid.substring(0,pid.indexOf('post'));
 	loadComments(pid);
 });
 
@@ -255,24 +292,17 @@ $("postUserPic").load(function() {
   </div>
   </div>
 
-<div id="locInfoContainer">
-<div id="locInfo">
-<script>document.write(localStorage.getItem("locName"));</script>
-<img src="http://farm1.static.flickr.com/221/464185760_0970ad567e.jpg" width="280px" class="pic">
-
-<form id="addEvent">
-<input name="name" placeholder="Event Name">
-<input type="submit" value="Create Event"  class="comment_button"/>
-</form>
-
-</div>
-</div>
-<div id="contentContainer">
+<div align="center">
+<table cellpadding="0" cellspacing="0" width="500px">
+<tr>
+<td>
 
 	
 <div align="left">
-<form  method="post" enctype="multipart/form-data" name="form" action="" id ="mform">
+<form method="post" enctype="multipart/form-data" name="form" action="" id ="mform">
 <table cellpadding="0" cellspacing="0" width="500px">
+
+<tr><td align="left"><div align="left"><h3>Care to share?</h3></div></td></tr>
 <tr>
 <td>
 <script>
@@ -316,7 +346,6 @@ $(function() {
 
 </table>
 </form>
-
 
 
 </div>
@@ -453,7 +482,7 @@ echo $display_string;
 </tr>
 </table>
 <div id="loader"></div>
-</div>
 
+</div>
 </body>
 </html>

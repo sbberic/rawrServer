@@ -150,9 +150,7 @@ $r=mysql_fetch_array($sql_in);
 $msg=$r['msg'];
 $msg_id=$r['msg_id'];
 */
-}
-?>
-<?php
+
 $display_string ="";
 		$display_string .= "<li class='{$type}post' id='{$pid}li'>";
 		$display_string .= "<div class='postContainer' id='{$pid}post'>";
@@ -198,6 +196,70 @@ $display_string ="";
 		$display_string .= "</div>";
 		$display_string .= "</li>";
 		echo $display_string;
+	}
+
+else if(isSet($_POST["commentText"])) {
+	$author=$_SESSION['uid']; 
+	$text=$_POST['commentText']; 
+	$timestamp = date("D M j G:i:s +0000 Y");
+	$pid=$_POST["pid"];
+	$cid = $redis->get('global.cid');
+	/*
+	$locName=$_POST['locName'];
+	
+	$parent="UC_Berkeley";
+	$score = 0;
+	*/
+	$lid=$_SESSION['lid'];
+	$commentAuthor='comment:'.$cid.'.uid';
+	$commentText='comment:'.$cid.'.text';
+	$commentTime='comment:'.$cid.'.time';
+
+	$newComment = array(
+		$commentAuthor=> $author,
+		$commentText => $text,
+		$commentTime => $timestamp
+	);
+	$postComments = 'post:'.$pid.'comments';
+	//appending comment to post's list of cids
+	$redis->rpush($postComments, $cid);
+	$redis->mset($newComment);
+	$redis->incr('global.cid');
+	
+	$display_string .= "<li class='{$type}post'>";
+		$display_string .= "<div class='commentContainer'>";
+		/* 	comment user pic
+		$display_string .= "<div class='commentUserPic' align='left'>";
+		$display_string .= "<img src='https://s3-us-west-1.amazonaws.com/rawrimages/{$uid}.png'>";
+		$display_string .= "</div>";
+		*/
+		$display_string .= "<div class='commentAuthor'>";
+		$display_string .= "<b>{$author}</b>";
+		$display_string .= "</div>";
+		$display_string .= "<div class='commentText'>";
+		$display_string .= "<span>";
+		$display_string .= $text;
+		$display_string .= "</span></div>";
+		/* 	comment score
+		$display_string .= "<div class='postScore' id='{$pid}Score'>";
+		$display_string .= $score;
+		$display_string .= "</div>";
+		/*	comment fav list
+		$display_string .= "<div class='postFavList' align='right'>";
+		foreach ($likers as $likeUID){
+			$display_string .= "<a href=''><img src='https://s3-us-west-1.amazonaws.com/rawrimages/{$likeUID}.png' width='20' height='20'></a>";
+		}	
+		$display_string .= "</div>";
+		/*	fav star
+		$display_string .= "<div class='postFav'><a href='#' id='{$pid}fav' onclick='fav({$pid},{$_SESSION['uid']}); return false;'>";
+		$display_string .= "k";
+		$display_string .= "</a></div>";
+		*/
+		
+		$display_string .= "</div>";
+	$display_string .= "</li>";
+	echo $display_string;
+}
 ?>		
 		
 
