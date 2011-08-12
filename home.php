@@ -26,8 +26,6 @@ $(function() {
 
 $(".comment_button").click(function() 
 {
-
-	
     var element = $(this);
    
     var boxval = $("#content").val();
@@ -54,8 +52,8 @@ $.ajax({
   cache: false,
   success: function(html){
  
-  $("ol#update").prepend(html);
-  $("ol#update li:first").slideDown("slow");
+  $("ol#updat").prepend(html);
+  $("ol#updat li:first").slideDown("slow");
    document.getElementById('content').value='';
   $("#flash").hide();
 	
@@ -64,14 +62,11 @@ $.ajax({
 }
 return false;
 	});
+});
 
-$(".comment_submit").click(function() 
-{ 
- 
-	console.log("clicked");
-    var elementID = this.id;
-	var pid = elementID.substring(0,indexOf("submit"));
-    var boxval = $("#comment_content").val();
+function commentClick(id) {
+	var pid = id;
+    var boxval = $("#"+pid+"cc").val();
 	
 	var locationName=localStorage.getItem("locName");
 	var dataString = 'commentText=' + boxval +'&locName='+locationName + '&pid=' + pid;
@@ -100,8 +95,7 @@ $.ajax({
  });
 }
 return false;
-	});
-});
+	};
 
 function randomString(length)
 {
@@ -134,7 +128,7 @@ function loadComments(pid){
 	if(document.getElementById(pid+"comments") == null) {
 		$.post('scripts/getMoreComments.php', {pid: pid }, function(data) {
 			$("li#"+pid+"li").append(data);
-			$("div#"+pid+"comments").slideDown("slow");
+			$("div#"+pid+"comments").slideDown();
 			console.log(pid);
 			
 		});
@@ -196,7 +190,7 @@ function () {
 function () {
    $(this).removeClass("hover");
 }
-)
+);
 $('.postContainer').click(function(){
 	var pid = this.id;
 	pid = pid.substring(0,pid.indexOf('post'));

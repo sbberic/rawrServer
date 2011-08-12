@@ -225,8 +225,10 @@ else if(isSet($_POST["commentText"])) {
 	$redis->rpush($postComments, $cid);
 	$redis->mset($newComment);
 	$redis->incr('global.cid');
-	
-	$display_string .= "<li class='{$type}post'>";
+	$aliasKey='uid:'.$author.'.alias';
+	$alias = trim($redis->get($aliasKey));
+	$display_string ="";
+	$display_string .= "<li class='{$cid}comment'>";
 		$display_string .= "<div class='commentContainer'>";
 		/* 	comment user pic
 		$display_string .= "<div class='commentUserPic' align='left'>";
@@ -234,7 +236,7 @@ else if(isSet($_POST["commentText"])) {
 		$display_string .= "</div>";
 		*/
 		$display_string .= "<div class='commentAuthor'>";
-		$display_string .= "<b>{$author}</b>";
+		$display_string .= "<b>{$alias}</b>";
 		$display_string .= "</div>";
 		$display_string .= "<div class='commentText'>";
 		$display_string .= "<span>";
